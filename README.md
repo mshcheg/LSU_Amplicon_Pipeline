@@ -26,7 +26,7 @@ sed -i '/>HWI\\-/!s/\\-/N/' unpaired.fasta &
 Combine overlapping and concatonated sequences into one file.
   
 ```bash
-cat unpaired_N.fasta paired.fasta > both.fasta \n",
+cat unpaired_N.fasta paired.fasta > both.fasta
 ```
 #####3. Create Groups
 You will need to create a groups file before running mothur. The groups file links sequence header names with a sample name and can be generated using the makeGroups.py python script. This script requires the same sample file used for amplicon parsing above and your concatonated fasta file. 
@@ -58,6 +58,7 @@ Using 8 processors.
 ```      
 
 Clean up sequences by removing all sequences with more than 1 ambiguity and homopolymers that are longer than 11 bases.
+
 *Note: mothur has many parameters for quality screening sequence using the [trim.seqs()](http://www.mothur.org/wiki/Trim.seqs) command. Quality screening should be based on the results of the summary.seqs() command for each particular set of sequences.* 
 
 ```
@@ -146,6 +147,7 @@ mothur > summary.seqs(fasta=Zanne_LSU_aligned.trim.unique.pick.align, processors
       # of Seqs:      5191746
 ```
 Remove sequences that align after base 53 or are less than 500 bp long.
+
 *Note: mothur has many parameters for quality screening alignments using the [screen.seqs()](http://www.mothur.org/wiki/Screen.seqs) command. Quality screening should be based on the results of the summary.seqs() command for each particular alignment.* 
 
 ```
@@ -223,6 +225,7 @@ mothur > get.seqs(accnos=Zanne_LSU_aligned.trim.unique.pick.good.filter.accnos, 
       
 #####8. Phylogenetic Analysis
 Reconstruct a neighbor joining tree from the LSU alignment. 
+
 *Note: this command did not sucessfully run on a 30 gb ram server for a 5 million sequence alignment.*
 ```
 mothur > clearcut(fasta=Zanne_LSU_aligned.trim.unique.pick.good.filter.fasta, DNA=t, verbose=t)
