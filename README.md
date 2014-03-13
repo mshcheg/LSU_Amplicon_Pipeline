@@ -28,9 +28,15 @@ Combine overlapping and concatonated sequences into one file.
 ```bash
 cat unpaired_N.fasta paired.fasta > both.fasta \n",
 ```
-######These following commands can be run in batch mode from the LSU_mothur_script.sh rather than interactivly in the mothur shell as described below.
+#####3. Create Groups
+You will need to create a groups file before running mothur. The groups file links sequence header names with a sample name and can be generated using the makeGroups.py python script. This script requires the same sample file used for amplicon parsing above and your concatonated fasta file. 
+```bash
+python makeGroups.py -s ZanneAmplicons_MattPipeline.txt -i both.fasta 
+```
 
-#####3.Sequence Processing and Cleanup
+######The following commands can be run in batch mode from the LSU_mothur_script.sh rather than interactivly in the mothur shell as described below.
+
+#####4. Sequence Processing and Cleanup
 
 Look at the quality of LSU sequences.
       
@@ -52,108 +58,59 @@ Using 8 processors.
 ```      
 
 Clean up sequences by removing all sequences with more than 1 ambiguity and homopolymers that are longer than 11 bases.
-Note: mothur has many p
+*Note: mothur has many parameters for quality screening sequencing using the [trim.seqs()](http://www.mothur.org/wiki/Trim.seqs) command. Quality screening should be based on the results of the summary.seqs() command for each particular set of sequences.* 
 
-      "\n",
-      "```bash\n",
-      "mothur > trim.seqs(fasta=Zanne-LSU_aligned.fasta, length=600, maxambig=1, maxhomop=11)\n",
-      "\n",
-      "Output File Names: \n",
-      "Zanne-LSU_aligned.trim.fasta\n",
-      "Zanne-LSU_aligned.scrap.fasta\n",
-      "```\n",
-      "Collapse all identical sequences. \n",
-      "\n",
-      "```bash\n",
-      "mothur > unique.seqs(fasta=Zanne-LSU_aligned.trim.fasta)\n",
-      "\n",
-      "Output File Names: \n",
-      "Zanne-LSU_aligned.trim.names\n",
-      "Zanne-LSU_aligned.trim.unique.fasta\n",
-      "```\n",
-      "####Alignment \n",
-      "Align LSU sequences to a reference LSU alignment. \n",
-      "\n",
-      "#####The reference LSU alignment was generated from the James et al. (2006) Combined data set, 214 taxa, nucleotides alignment available on the [AFTOL website](http://wasabi.lutzonilab.net/pub/alignments/download_alignments). Non fungal taxa were removed from the alignment and the remaining sequences were trimmed down to only the LSU region flanked by the LROR and LR3 primers. Taxa missing this region were removed. The Final alignment can be downladed [here] (https://www.dropbox.com/s/uxstqgyt93wokn4/James_2006_FungiOnly_LSU_LR0R_LR3.fasta.tgz).  \n",
-      "\n",
-      "```bash\n",
-      "mothur > align.seqs(candidate=Zanne_LSU_aligned.trim.unique.fasta, template=James_2006_FungiOnly_LSU_LR0R_LR3.fasta, flip=T, processors=10)\n",
-      "\n",
-      "Some of you sequences generated alignments that eliminated too many bases, a list is provided in Zanne_LSU_aligned.trim.unique.flip.accnos. If the reverse compliment proved to be better it was reported.\n",
-      "It took 2664 secs to align 5252010 sequences.\n",
-      "\n",
-      "\n",
-      "Output File Names: \n",
-      "Zanne_LSU_aligned.trim.unique.align\n",
-      "Zanne_LSU_aligned.trim.unique.align.report\n",
-      "Zanne_LSU_aligned.trim.unique.flip.accnos\n",
-      "```\n",
-      "####Check for Chimeras\n",
-      "Use chimera slayer and the referance LSU alignment to check for chimeric LSU sequences. \n",
-      "\n",
-      "```bash\n",
-      "mothur > chimera.slayer(fasta=Zanne_LSU_aligned.trim.unique.align, template=James_2006_FungiOnly_LSU_LR0R_LR3.fasta, processors=10, blastlocation=/usr/bin/)\n",
-      "\n",
-      "It took 29884 secs to check 5252010 sequences.\n",
-      "\n",
-      "Output File Names: \n",
-      "Zanne_LSU_aligned.trim.unique.slayer.chimeras\n",
-      "Zanne_LSU_aligned.trim.unique.slayer.accnos\n",
-      "```\n",
-      "\n",
-      "Remove chimeric sequences from analysis files. \n",
-      "\n",
-      "#####You will need to create a groups file before this step. The groups file links sequence header names with a sample name. "
-     ]
-    },
-    {
-     "cell_type": "code",
-     "collapsed": false,
-     "input": [
-      "#Generate groups file for mothur analysis\n",
-      "\n",
-      "import csv\n",
-      "import os\n",
-      "\n",
-      "#>HWI-M01380:52:000000000-A64W5:1:1101:18312:1730:India402\n",
-      "\n",
-      "SampletoBarcode = {}\n",
-      "\n",
-      "#Create a dictionary linking sample namer to barcode names \n",
-      "i=0\n",
-      "with open('LookupTable.csv', 'rb') as csvfile:\n",
-      "\tLookUpReader = csv.reader(csvfile, delimiter='\\t')\n",
-      "\tfor row in LookUpReader:\n",
-      "\t\tsample = \"_\".join(row[0].split())\n",
-      "\t\tif sample == \"Neg\":\n",
-      "\t\t\tsample = sample+str(i)\n",
-      "\t\t\tSampletoBarcode[row[1]] = sample\t\t\t\n",
-      "\t\t\ti+=1\n",
-      "\t\telse:\n",
-      "\t\t\tsample = sample\n",
-      "\t\t\tSampletoBarcode[row[1]] = sample\n",
-      "\n",
-      "sequence = 0\n",
-      "\n",
-      "#Loop through the mothur input file, extract sequence headers and write the groups file\n",
-      "with open('Zanne-LSU_aligned.fasta', 'r') as R1file:\n",
-      "    with open('LSU.groups', 'w') as Groupsfile:\n",
-      "        while 1:\n",
-      "            SequenceHeader1= R1file.readline()\n",
-      "    \t\tSequence1= R1file.readline()\n",
-      "    \t\t\t\n",
-      "            if SequenceHeader1 == '': #exit loop when end of file is reached\n",
-      "        \t\tbreak\n",
-      "\t\t\t\n",
-      "            barcode = SequenceHeader1.split(\":\")[7].strip('\\n')\t\n",
-      "#mothur replaces ':' with '_'\n",
-      "            Groupsfile.write('%s\\t%s' %('_'.join(SequenceHeader1.strip(\">\").strip('\\n').split(\":\")),SampletoBarcode[barcode]))\t\t"
-     ],
-     "language": "python",
-     "metadata": {},
-     "outputs": []
-    },
-    {
+```
+mothur > trim.seqs(fasta=Zanne-LSU_aligned.fasta, length=600, maxambig=1, maxhomop=11)
+
+      Output File Names:
+      Zanne-LSU_aligned.trim.fasta
+      Zanne-LSU_aligned.scrap.fasta
+```
+Collapse all identical sequences.
+     
+```
+mothur > unique.seqs(fasta=Zanne-LSU_aligned.trim.fasta)
+      
+      Output File Names: 
+      Zanne-LSU_aligned.trim.names
+      Zanne-LSU_aligned.trim.unique.fasta
+```
+#####5. Alignment
+
+Align LSU sequences to a reference LSU alignment. \n",
+  
+######The reference LSU alignment was generated from the James et al. (2006) Combined data set, 214 taxa, nucleotides alignment available on the [AFTOL website](http://wasabi.lutzonilab.net/pub/alignments/download_alignments). Non fungal taxa were removed from the alignment and the remaining sequences were trimmed down to only the LSU region flanked by the LROR and LR3 primers. Taxa missing this region were removed. The Final alignment can be downladed [here] (https://www.dropbox.com/s/uxstqgyt93wokn4/James_2006_FungiOnly_LSU_LR0R_LR3.fasta.tgz).
+
+```
+mothur > align.seqs(candidate=Zanne_LSU_aligned.trim.unique.fasta, template=James_2006_FungiOnly_LSU_LR0R_LR3.fasta, flip=T, processors=10)\n",
+
+      Some of you sequences generated alignments that eliminated too many bases, a list is provided in Zanne_LSU_aligned.trim.unique.flip.accnos. If the reverse compliment proved to be better it was reported.
+      It took 2664 secs to align 5252010 sequences.
+      
+      
+      Output File Names: 
+      Zanne_LSU_aligned.trim.unique.align
+      Zanne_LSU_aligned.trim.unique.align.report
+      Zanne_LSU_aligned.trim.unique.flip.accnos
+```
+
+#####6. Check for Chimeras
+
+Use chimera slayer and the referance LSU alignment to check for chimeric LSU sequences.
+    
+```
+mothur > chimera.slayer(fasta=Zanne_LSU_aligned.trim.unique.align, template=James_2006_FungiOnly_LSU_LR0R_LR3.fasta, processors=10, blastlocation=/usr/bin/)
+      
+      It took 29884 secs to check 5252010 sequences.
+      
+      Output File Names:
+      Zanne_LSU_aligned.trim.unique.slayer.chimeras
+      Zanne_LSU_aligned.trim.unique.slayer.accnos
+```
+Remove chimeric sequences from analysis files. 
+
+
      "cell_type": "markdown",
      "metadata": {},
      "source": [
