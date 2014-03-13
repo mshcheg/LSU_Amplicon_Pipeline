@@ -58,7 +58,7 @@ Using 8 processors.
 ```      
 
 Clean up sequences by removing all sequences with more than 1 ambiguity and homopolymers that are longer than 11 bases.
-*Note: mothur has many parameters for quality screening sequencing using the [trim.seqs()](http://www.mothur.org/wiki/Trim.seqs) command. Quality screening should be based on the results of the summary.seqs() command for each particular set of sequences.* 
+*Note: mothur has many parameters for quality screening sequence using the [trim.seqs()](http://www.mothur.org/wiki/Trim.seqs) command. Quality screening should be based on the results of the summary.seqs() command for each particular set of sequences.* 
 
 ```
 mothur > trim.seqs(fasta=Zanne-LSU_aligned.fasta, length=600, maxambig=1, maxhomop=11)
@@ -109,138 +109,121 @@ mothur > chimera.slayer(fasta=Zanne_LSU_aligned.trim.unique.align, template=Jame
       Zanne_LSU_aligned.trim.unique.slayer.accnos
 ```
 Remove chimeric sequences from analysis files. 
+```
+mothur > remove.seqs(accnos=Zanne_LSU_aligned.trim.unique.slayer.accnos, name=Zanne-LSU_aligned.trim.names)
+    
+      Output File Names:
+      Zanne-LSU_aligned.trim.pick.names
+      
+mothur > remove.seqs(accnos=Zanne_LSU_aligned.trim.unique.slayer.accnos, group=LSU.groups)
+      
+      Output File Names: 
+      LSU.pick.groups
+      
+mothur > remove.seqs(accnos=Zanne_LSU_aligned.trim.unique.slayer.accnos, fasta=Zanne_LSU_aligned.trim.unique.align)
+      
+      Output File Names: 
+      Zanne_LSU_aligned.trim.unique.pick.align
+```
+     
+#####7. Clean Alignment
 
+Check quality of alignment with chimeras removed.   
+```
+mothur > summary.seqs(fasta=Zanne_LSU_aligned.trim.unique.pick.align, processors=15)
+      
+      Using 15 processors.
+      
+                      Start   End     NBases  Ambigs  Polymer NumSeqs
+      Minimum:        0       0       0       0       1       1
+      2.5%-tile:      1       264     195     0       4       129794
+      25%-tile:       18      644     520     0       4       1297937
+      Median:         18      686     543     0       5       2595874
+      75%-tile:       18      954     565     1       5       3893810
+      97.5%-tile:     53      954     569     1       7       5061953
+      Maximum:        972     972     575     1       11      5191746
+      Mean:   25.6089 756.843 517.662 0.420943        4.85864
+      # of Seqs:      5191746
+```
+Remove sequences that align after base 53 or are less than 500 bp long.
+*Note: mothur has many parameters for quality screening alignments using the [screen.seqs()](http://www.mothur.org/wiki/Screen.seqs) command. Quality screening should be based on the results of the summary.seqs() command for each particular alignment.* 
 
-     "cell_type": "markdown",
-     "metadata": {},
-     "source": [
-      "```bash\n",
-      "mothur > remove.seqs(accnos=Zanne_LSU_aligned.trim.unique.slayer.accnos, name=Zanne-LSU_aligned.trim.names)\n",
-      "\n",
-      "Output File Names: \n",
-      "Zanne-LSU_aligned.trim.pick.names\n",
-      "\n",
-      "\n",
-      "mothur > remove.seqs(accnos=Zanne_LSU_aligned.trim.unique.slayer.accnos, group=LSU.groups)\n",
-      "\n",
-      "Output File Names: \n",
-      "LSU.pick.groups\n",
-      "\n",
-      "mothur > remove.seqs(accnos=Zanne_LSU_aligned.trim.unique.slayer.accnos, fasta=Zanne_LSU_aligned.trim.unique.align)\n",
-      "\n",
-      "Output File Names: \n",
-      "Zanne_LSU_aligned.trim.unique.pick.align\n",
-      "```\n",
-      "####Clean Alignment\n",
-      "Check quality of alignment with chimeras removed. \n",
-      "\n",
-      "```bash\n",
-      "mothur > summary.seqs(fasta=Zanne_LSU_aligned.trim.unique.pick.align, processors=15)\n",
-      "\n",
-      "Using 15 processors.\n",
-      "\n",
-      "                Start   End     NBases  Ambigs  Polymer NumSeqs\n",
-      "Minimum:        0       0       0       0       1       1\n",
-      "2.5%-tile:      1       264     195     0       4       129794\n",
-      "25%-tile:       18      644     520     0       4       1297937\n",
-      "Median:         18      686     543     0       5       2595874\n",
-      "75%-tile:       18      954     565     1       5       3893810\n",
-      "97.5%-tile:     53      954     569     1       7       5061953\n",
-      "Maximum:        972     972     575     1       11      5191746\n",
-      "Mean:   25.6089 756.843 517.662 0.420943        4.85864\n",
-      "# of Seqs:      5191746\n",
-      "```\n",
-      "Remove sequences that align after base 53 or are less than 500 bp long.\n",
-      "\n",
-      "```bash\n",
-      "mothur > screen.seqs(fasta=Zanne_LSU_aligned.trim.unique.pick.align, start=53, minlength=500)\n",
-      "\n",
-      "Output File Names: \n",
-      "Zanne_LSU_aligned.trim.unique.pick.good.align\n",
-      "Zanne_LSU_aligned.trim.unique.pick.bad.accnos\n",
-      "\n",
-      "It took 51 secs to screen 5191746 sequences.\n",
-      "\n",
-      "mothur > summary.seqs(fasta=Zanne_LSU_aligned.trim.unique.pick.good.align)\n",
-      "\n",
-      "Using 15 processors.\n",
-      "\n",
-      "                Start   End     NBases  Ambigs  Polymer NumSeqs\n",
-      "Minimum:        1       609     500     0       3       1\n",
-      "2.5%-tile:      18      632     507     0       4       106087\n",
-      "25%-tile:       18      654     530     0       4       1060862\n",
-      "Median:         18      721     555     1       5       2121723\n",
-      "75%-tile:       18      954     566     1       5       3182584\n",
-      "97.5%-tile:     44      954     569     1       7       4137359\n",
-      "Maximum:        53      972     575     1       11      4243445\n",
-      "Mean:   20.5771 806.123 547.62  0.508047        4.92197\n",
-      "# of Seqs:      4243445\n",
-      "```\n",
-      "Remove regions with only gaps from the alignment\n",
-      "\n",
-      "```bash\n",
-      "mothur > filter.seqs(fasta=Zanne_LSU_aligned.trim.unique.pick.good.align)\n",
-      "\n",
-      "Length of filtered alignment: 771\n",
-      "Number of columns removed: 201\n",
-      "Length of the original alignment: 972\n",
-      "Number of sequences used to construct filter: 4243445\n",
-      "\n",
-      "Output File Names: \n",
-      "Zanne_LSU_aligned.filter\n",
-      "Zanne_LSU_aligned.trim.unique.pick.good.filter.fasta\n",
-      "\n",
-      "mothur > summary.seqs(fasta=Zanne_LSU_aligned.trim.unique.pick.good.filter.fasta)\n",
-      "\n",
-      "Using 15 processors.\n",
-      "\n",
-      "                Start   End     NBases  Ambigs  Polymer NumSeqs\n",
-      "Minimum:        1       605     500     0       3       1\n",
-      "2.5%-tile:      18      628     507     0       4       106087\n",
-      "25%-tile:       18      650     530     0       4       1060862\n",
-      "Median:         18      717     555     1       5       2121723\n",
-      "75%-tile:       18      754     566     1       5       3182584\n",
-      "97.5%-tile:     44      754     569     1       7       4137359\n",
-      "Maximum:        53      771     575     1       11      4243445\n",
-      "Mean:   20.5771 706.101 547.62  0.508047        4.92197\n",
-      "# of Seqs:      4243445\n",
-      "\n",
-      "Output File Names: \n",
-      "Zanne_LSU_aligned.trim.unique.pick.good.filter.summary\n",
-      "\n",
-      "```\n",
-      "Extract sequence names maintained in filtered alignment and subset mothur files to only those names.\n",
-      "\n",
-      "```bash\n",
-      "mothur > list.seqs(fasta=Zanne_LSU_aligned.trim.unique.pick.good.filter.fasta)\n",
-      "\n",
-      "Output File Names: \n",
-      "Zanne_LSU_aligned.trim.unique.pick.good.filter.accnos\n",
-      "\n",
-      "\n",
-      "mothur > get.seqs(accnos=Zanne_LSU_aligned.trim.unique.pick.good.filter.accnos, name=Zanne-LSU_aligned.trim.names) \n",
-      "\n",
-      "Output File Names: \n",
-      "Zanne-LSU_aligned.trim.pick.names\n",
-      "\n",
-      "\n",
-      "mothur > get.seqs(accnos=Zanne_LSU_aligned.trim.unique.pick.good.filter.accnos, name=LSU.groups) \n",
-      "\n",
-      "Output File Names: \n",
-      "LSU.pick.groups\n",
-      "\n",
-      "```\n",
-      "\n",
-      "####Phylogenetic Analysis\n",
-      "Reconstruct a neighbor joining tree for downstream analysis \n",
-      "\n",
-      "```bash\n",
-      "mothur > clearcut(fasta=Zanne_LSU_aligned.trim.unique.pick.good.filter.fasta, DNA=t, verbose=t)\n",
-      "```"
-     ]
-    }
-   ],
-   "metadata": {}
-  }
- ]
-}
+```
+mothur > screen.seqs(fasta=Zanne_LSU_aligned.trim.unique.pick.align, start=53, minlength=500)
+
+      Output File Names: 
+      Zanne_LSU_aligned.trim.unique.pick.good.align
+      Zanne_LSU_aligned.trim.unique.pick.bad.accnos
+      
+      It took 51 secs to screen 5191746 sequences.
+      
+mothur > summary.seqs(fasta=Zanne_LSU_aligned.trim.unique.pick.good.align)
+      
+      Using 15 processors
+      
+                      Start   End     NBases  Ambigs  Polymer NumSeqs
+      Minimum:        1       609     500     0       3       1
+      2.5%-tile:      18      632     507     0       4       106087
+      25%-tile:       18      654     530     0       4       1060862
+      Median:         18      721     555     1       5       2121723
+      75%-tile:       18      954     566     1       5       3182584
+      97.5%-tile:     44      954     569     1       7       4137359
+      Maximum:        53      972     575     1       11      4243445
+      Mean:   20.5771 806.123 547.62  0.508047        4.92197
+      # of Seqs:      4243445
+```
+Remove regions with only gaps from the alignment
+```
+mothur > filter.seqs(fasta=Zanne_LSU_aligned.trim.unique.pick.good.align)
+      
+      Length of filtered alignment: 771
+      Number of columns removed: 201
+      Length of the original alignment: 972
+      Number of sequences used to construct filter: 4243445
+      
+      Output File Names: 
+      Zanne_LSU_aligned.filter
+      Zanne_LSU_aligned.trim.unique.pick.good.filter.fasta
+      
+mothur > summary.seqs(fasta=Zanne_LSU_aligned.trim.unique.pick.good.filter.fasta)
+      
+      Using 15 processors
+      
+                      Start   End     NBases  Ambigs  Polymer NumSeqs
+      Minimum:        1       605     500     0       3       1
+      2.5%-tile:      18      628     507     0       4       106087
+      25%-tile:       18      650     530     0       4       1060862
+      Median:         18      717     555     1       5       2121723
+      75%-tile:       18      754     566     1       5       3182584
+      97.5%-tile:     44      754     569     1       7       4137359
+      Maximum:        53      771     575     1       11      4243445
+      Mean:   20.5771 706.101 547.62  0.508047        4.92197
+      # of Seqs:      4243445
+     
+      Output File Names: 
+      Zanne_LSU_aligned.trim.unique.pick.good.filter.summary
+```
+Extract sequence names maintained in filtered alignment and subset mothur files to only those names.
+```
+mothur > list.seqs(fasta=Zanne_LSU_aligned.trim.unique.pick.good.filter.fasta)
+    
+      Output File Names: 
+      Zanne_LSU_aligned.trim.unique.pick.good.filter.accnos
+      
+mothur > get.seqs(accnos=Zanne_LSU_aligned.trim.unique.pick.good.filter.accnos, name=Zanne-LSU_aligned.trim.names) 
+     
+      Output File Names:
+      Zanne-LSU_aligned.trim.pick.names
+      
+mothur > get.seqs(accnos=Zanne_LSU_aligned.trim.unique.pick.good.filter.accnos, name=LSU.groups) \n",
+      
+      Output File Names: 
+      LSU.pick.groups
+```
+      
+#####8. Phylogenetic Analysis
+Reconstruct a neighbor joining tree from the LSU alignment. 
+*Note: this command did not sucessfully run on a 30 gb ram server for a 5 million sequence alignment.*
+```
+mothur > clearcut(fasta=Zanne_LSU_aligned.trim.unique.pick.good.filter.fasta, DNA=t, verbose=t)
+```
