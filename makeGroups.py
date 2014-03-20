@@ -3,7 +3,7 @@
 '''
     This script generates a group file for mothur analyses. The group file maps fasta sequence headers to sample names.
     
-    To run this script a file linking sample id's to sequencgin barcode ids must be provided along with the input fasta file.
+    To run this script a file linking sample id's to sequencing barcode id's must be provided along with the input fasta file.
 
     Author: Mariya Shcheglovitova
     Email: m.shcheglovitova@gmail.com
