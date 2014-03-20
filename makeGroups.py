@@ -1,6 +1,14 @@
 #!/bin/python
 
-#Script to generate groups file for mothur analysis.
+'''
+    This script generates a group file for mothur analyses. The group file maps fasta sequence headers to sample names.
+    
+    To run this script a file linking sample id's to sequencgin barcode ids must be provided along with the input fasta file.
+
+    Author: Mariya Shcheglovitova
+    Email: m.shcheglovitova@gmail.com
+    License: Creative Commons Attribution
+'''
 
 import csv
 import os
