@@ -29,9 +29,9 @@ with open(args.sample[0], 'rb') as csvfile:
             sample = "_".join(row[SampleIndex].split())
             barcode = row[BarcodeIndex]
             if sample == "Neg":
-                sample = sample+str(i)
+                sample = sample+str(j)
                 SampletoBarcode[barcode] = sample
-                i+=1
+                j+=1
             else:
                 sample = sample
                 SampletoBarcode[barcode] = sample
