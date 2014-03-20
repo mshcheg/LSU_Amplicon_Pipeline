@@ -217,7 +217,7 @@ mothur > get.seqs(accnos=Zanne_LSU_aligned.trim.unique.pick.good.filter.accnos, 
       Output File Names:
       Zanne-LSU_aligned.trim.pick.names
       
-mothur > get.seqs(accnos=Zanne_LSU_aligned.trim.unique.pick.good.filter.accnos, name=LSU.groups) \n",
+mothur > get.seqs(accnos=Zanne_LSU_aligned.trim.unique.pick.good.filter.accnos, name=LSU.groups)
       
       Output File Names: 
       LSU.pick.groups
